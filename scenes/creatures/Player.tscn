@@ -1,0 +1,86 @@
+[gd_scene load_steps=9 format=3 uid="uid://ds2vmnyp6wfb"]
+
+[ext_resource type="Script" uid="uid://dt4xkfo1qv04j" path="res://scenes/creatures/player.gd" id="1_a7b0y"]
+[ext_resource type="Texture2D" uid="uid://cdkte6vsiivnq" path="res://assets/textures/characters.png" id="1_j26gx"]
+
+[sub_resource type="Animation" id="Animation_xhfnw"]
+resource_name = "Jump"
+loop_mode = 1
+step = 0.0
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0.0183848, 0.144719, 0.30022, 0.607715, 0.709656, 0.809528),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1),
+"update": 1,
+"values": [1, 4, 5, 6, 7, 8]
+}
+
+[sub_resource type="Animation" id="Animation_kne1u"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [1]
+}
+
+[sub_resource type="Animation" id="Animation_e80uo"]
+resource_name = "new_animation"
+step = 0.0
+
+[sub_resource type="Animation" id="Animation_kpjcp"]
+resource_name = "idle"
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.25, 0.5, 0.75),
+"transitions": PackedFloat32Array(1, 1, 1, 1),
+"update": 1,
+"values": [1, 2, 3, 2]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_e80uo"]
+_data = {
+&"Jump": SubResource("Animation_xhfnw"),
+&"RESET": SubResource("Animation_kne1u"),
+&"new_animation": SubResource("Animation_e80uo"),
+&"walk": SubResource("Animation_kpjcp")
+}
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_cxr5p"]
+radius = 11.0
+
+[node name="CharacterBody2D" type="CharacterBody2D"]
+script = ExtResource("1_a7b0y")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture = ExtResource("1_j26gx")
+hframes = 23
+vframes = 4
+frame = 1
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+root_node = NodePath("../Sprite2D")
+libraries = {
+&"": SubResource("AnimationLibrary_e80uo")
+}
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(0, 5)
+shape = SubResource("CircleShape2D_cxr5p")
