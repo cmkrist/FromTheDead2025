@@ -1,3 +1,10 @@
-[gd_scene format=3 uid="uid://d1dvp4hxosfpf"]
+[gd_scene load_steps=3 format=3 uid="uid://d1dvp4hxosfpf"]
+
+[ext_resource type="PackedScene" uid="uid://6rs42bsh5laa" path="res://scenes/first_level.tscn" id="1_spdx3"]
+[ext_resource type="PackedScene" uid="uid://ds2vmnyp6wfb" path="res://scenes/creatures/Player.tscn" id="2_puwen"]
 
 [node name="Demo" type="Node2D"]
+
+[node name="Node2D" parent="." instance=ExtResource("1_spdx3")]
+
+[node name="CharacterBody2D" parent="." instance=ExtResource("2_puwen")]
