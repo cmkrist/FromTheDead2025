@@ -5,6 +5,14 @@
 
 [node name="Demo" type="Node2D"]
 
+[node name="Camera2D" type="Camera2D" parent="."]
+zoom = Vector2(2, 2)
+drag_horizontal_enabled = true
+drag_vertical_enabled = true
+
 [node name="Node2D" parent="." instance=ExtResource("1_spdx3")]
 
 [node name="CharacterBody2D" parent="." instance=ExtResource("2_puwen")]
+
+[node name="RemoteTransform2D" type="RemoteTransform2D" parent="CharacterBody2D"]
+remote_path = NodePath("../../Camera2D")
