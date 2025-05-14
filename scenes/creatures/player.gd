@@ -1,38 +1,59 @@
 extends CharacterBody2D
 
-const SPEED = 300.0
+var SPEED = 100.0
+const BASE_SPEED = 100.0
+const SPRINT_SPEED = 75.0
 const DIAGONAL_SPEED_MODIFIER = 0.75
 
-var facing_left := false
-var facing_up := false
+const Characters = {
+	"Male1": "res://assets/textures/male_1.png",
+	"Male2": "res://assets/textures/male_2.png",
+	"Female1": "res://assets/textures/female_1.png",
+	"Female2": "res://assets/textures/female_2.png",
+	"ConstructionWorker": "res://assets/textures/construction_worker.png",
+	"OldMan": "res://assets/textures/old_man.png"
+}
+# States
+enum STATE {
+	IDLE,
+	WALK_LEFT,
+	WALK_RIGHT,
+	WALK_UP,
+	WALK_DOWN
+}
+var current_state = STATE.IDLE
 
-# Animation frames
-const FRAME_SIDE = 1
-const FRAME_UP = 18
+func _ready() -> void:
+	# Set default character sprite if none is set
+	if $Sprite2D.texture == null:
+		var keys = Characters.keys()
+		set_sprite(Characters[keys[randi_range(0, keys.size() - 1)]])
 
 func _physics_process(delta: float) -> void:
 	handle_movement()
 	update_sprite()
 	move_and_slide()
 
+func _input(event: InputEvent) -> void:
+	if event.is_action_pressed("ui_accept"):
+		var keys = Characters.keys()
+		set_sprite(Characters[keys[randi_range(0, keys.size() - 1)]])
+	if event.is_action_pressed("sprint"):
+		SPEED = BASE_SPEED + SPRINT_SPEED
+		$AnimationPlayer.speed_scale = 2
+	if event.is_action_released("sprint"):
+		SPEED = BASE_SPEED
+		$AnimationPlayer.speed_scale = 1
+
 func handle_movement() -> void:
-	var lr_direction := Input.get_axis("ui_left", "ui_right")
-	var ud_direction := Input.get_axis("ui_up", "ui_down")
-	
-	# Update facing direction
-	if lr_direction != 0.0:
-		facing_left = lr_direction < 0
-	if ud_direction != 0.0:
-		facing_up = ud_direction < 0
-	
+	var lr_direction := Input.get_axis("move_left", "move_right")
+	var ud_direction := Input.get_axis("move_up", "move_down")
 	# Calculate velocity based on input
 	if lr_direction != 0.0 and ud_direction != 0.0:
 		# Moving diagonally - apply speed modifier
 		velocity.x = lr_direction * SPEED * DIAGONAL_SPEED_MODIFIER
 		velocity.y = ud_direction * SPEED * DIAGONAL_SPEED_MODIFIER
 	elif lr_direction != 0.0:
-		if facing_up:
-			facing_up = false
 		# Moving horizontally
 		velocity.x = lr_direction * SPEED
 		velocity.y = move_toward(velocity.y, 0, SPEED)
@@ -46,11 +67,49 @@ func handle_movement() -> void:
 		velocity.y = move_toward(velocity.y, 0, SPEED)
 
 func update_sprite() -> void:
-	# Update sprite direction
-	$Sprite2D.flip_h = facing_left
+	# Determine current state based on velocity and facing direction
+	var previous_state = current_state
 	
-	# Set appropriate animation frame
-	if facing_up:
-		$Sprite2D.frame = FRAME_UP
+	if velocity.length() < 10.0:  # Small threshold to detect idle state
+		current_state = STATE.IDLE
+	elif abs(velocity.x) > abs(velocity.y):
+		# Horizontal movement is dominant
+		current_state = STATE.WALK_LEFT if velocity.x < 0 else STATE.WALK_RIGHT
 	else:
-		$Sprite2D.frame = FRAME_SIDE
+		# Vertical movement is dominant
+		current_state = STATE.WALK_UP if velocity.y < 0 else STATE.WALK_DOWN
+	
+	# Only update animation if state changed
+	if current_state != previous_state:
+		match current_state:
+			STATE.IDLE:
+				$AnimationPlayer.stop()
+				match previous_state:
+					STATE.WALK_LEFT:
+						$Sprite2D.frame = 0
+					STATE.WALK_RIGHT:
+						$Sprite2D.frame = 3
+					STATE.WALK_UP:
+						$Sprite2D.frame = 2
+					STATE.WALK_DOWN:
+						$Sprite2D.frame = 1
+					_:
+						$Sprite2D.frame = 0
+			STATE.WALK_LEFT:
+				if !($AnimationPlayer.is_playing() && $AnimationPlayer.current_animation == "walk_left"):
+					$AnimationPlayer.play("walk_left")
+			STATE.WALK_RIGHT:
+				if !($AnimationPlayer.is_playing() && $AnimationPlayer.current_animation == "walk_right"):
+					$AnimationPlayer.play("walk_right")
+			STATE.WALK_UP:
+				if !($AnimationPlayer.is_playing() && $AnimationPlayer.current_animation == "walk_up"):
+					$AnimationPlayer.play("walk_up")
+			STATE.WALK_DOWN:
+				if !($AnimationPlayer.is_playing() && $AnimationPlayer.current_animation == "walk_down"):
+					$AnimationPlayer.play("walk_down")
+
+func set_sprite(res_location):
+	$Sprite2D.texture = load(res_location)
+	$Sprite2D.frame = 1
+	
+# Setup function to be called when node is added to scene
