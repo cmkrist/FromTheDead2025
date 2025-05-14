@@ -1,11 +1,21 @@
-[gd_scene load_steps=3 format=3 uid="uid://d1dvp4hxosfpf"]
+[gd_scene load_steps=6 format=3 uid="uid://d1dvp4hxosfpf"]
 
 [ext_resource type="PackedScene" uid="uid://tlcwlnly00y4" path="res://scenes/first_level.tscn" id="1_spdx3"]
+[ext_resource type="Script" uid="uid://c33shtxwu5gua" path="res://Game.gd" id="1_utl8k"]
 [ext_resource type="PackedScene" uid="uid://ds2vmnyp6wfb" path="res://scenes/creatures/player.tscn" id="2_puwen"]
+[ext_resource type="PackedScene" uid="uid://dbqwwjxjnifhd" path="res://scenes/UI.tscn" id="3_puwen"]
+[ext_resource type="PackedScene" uid="uid://c7efr4hnmpn3e" path="res://scenes/creatures/npc.tscn" id="5_o3s4h"]
 
 [node name="Demo" type="Node2D"]
+script = ExtResource("1_utl8k")
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+
+[node name="Ui" parent="CanvasLayer" instance=ExtResource("3_puwen")]
 
 [node name="Camera2D" type="Camera2D" parent="."]
+position = Vector2(41, 108)
+scale = Vector2(0.972325, 1)
 zoom = Vector2(2, 2)
 drag_horizontal_enabled = true
 drag_vertical_enabled = true
@@ -13,6 +23,12 @@ drag_vertical_enabled = true
 [node name="Node2D" parent="." instance=ExtResource("1_spdx3")]
 
 [node name="CharacterBody2D" parent="." instance=ExtResource("2_puwen")]
+position = Vector2(41, 108)
+scale = Vector2(0.972325, 1)
 
 [node name="RemoteTransform2D" type="RemoteTransform2D" parent="CharacterBody2D"]
 remote_path = NodePath("../../Camera2D")
+
+[node name="Npc" parent="." node_paths=PackedStringArray("Goal") instance=ExtResource("5_o3s4h")]
+position = Vector2(511, 176)
+Goal = NodePath("../CharacterBody2D")

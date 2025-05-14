@@ -1,0 +1,14 @@
+[gd_scene load_steps=3 format=3 uid="uid://bdtg6tw6mkvnc"]
+
+[ext_resource type="Texture2D" uid="uid://csky4bid74jxt" path="res://assets/textures/stake.png" id="1_ye6n6"]
+[ext_resource type="Script" uid="uid://ds8qw7geyylj4" path="res://scenes/whispy_trail.gd" id="2_yewm2"]
+
+[node name="Stake" type="Node2D"]
+position = Vector2(364, 262)
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture = ExtResource("1_ye6n6")
+
+[node name="whispy_trail" type="Line2D" parent="." node_paths=PackedStringArray("Goal")]
+script = ExtResource("2_yewm2")
+Goal = NodePath("..")

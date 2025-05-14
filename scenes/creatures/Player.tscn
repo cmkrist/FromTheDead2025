@@ -1,103 +1,43 @@
-[gd_scene load_steps=9 format=3 uid="uid://ds2vmnyp6wfb"]
+[gd_scene load_steps=7 format=3 uid="uid://ds2vmnyp6wfb"]
 
 [ext_resource type="Script" uid="uid://dt4xkfo1qv04j" path="res://scenes/creatures/player.gd" id="1_a7b0y"]
+[ext_resource type="Texture2D" uid="uid://ccavaisq8rvbd" path="res://assets/textures/blood.png" id="2_gw8ya"]
+[ext_resource type="AnimationLibrary" uid="uid://c6guviwv4py3l" path="res://assets/animations/human_animations.res" id="2_ydy0f"]
 
-[sub_resource type="CircleShape2D" id="CircleShape2D_cxr5p"]
-radius = 8.0
+[sub_resource type="CircleShape2D" id="CircleShape2D_gw8ya"]
+radius = 2.0
 
-[sub_resource type="Animation" id="Animation_gw8ya"]
-resource_name = "walk_left"
-length = 0.8
-loop_mode = 1
-tracks/0/type = "value"
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/path = NodePath("Sprite2D:frame")
-tracks/0/interp = 1
-tracks/0/loop_wrap = true
-tracks/0/keys = {
-"times": PackedFloat32Array(0, 0.2, 0.4, 0.6, 0.866667),
-"transitions": PackedFloat32Array(1, 1, 1, 1, 1),
-"update": 1,
-"values": [0, 4, 0, 8, 1]
-}
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_etupx"]
+particle_flag_disable_z = true
+inherit_velocity_ratio = 1.0
+direction = Vector3(0, 0, 0)
+spread = 180.0
+initial_velocity_min = 5.0
+initial_velocity_max = 50.0
+gravity = Vector3(0, 40, 0)
+linear_accel_min = -2.23517e-06
+linear_accel_max = 30.0
+radial_accel_min = -2.23517e-06
+radial_accel_max = 30.0
+hue_variation_min = -2.23517e-08
+hue_variation_max = 0.5
 
-[sub_resource type="Animation" id="Animation_ydy0f"]
-length = 0.001
-tracks/0/type = "value"
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/path = NodePath("Sprite2D:frame")
-tracks/0/interp = 1
-tracks/0/loop_wrap = true
-tracks/0/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
-"update": 1,
-"values": [1]
-}
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_ydy0f"]
+particle_flag_disable_z = true
+emission_shape = 1
+emission_sphere_radius = 0.01
+angle_min = -3.79999
+angle_max = 7.50001
+inherit_velocity_ratio = -0.99
+direction = Vector3(0, -1, 0)
+initial_velocity_max = 51.84
+angular_velocity_min = -1.60933e-05
+angular_velocity_max = 595.6
+gravity = Vector3(0, 98, 0)
+attractor_interaction_enabled = false
 
-[sub_resource type="Animation" id="Animation_etupx"]
-resource_name = "walk_right"
-length = 0.8
-loop_mode = 1
-tracks/0/type = "value"
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/path = NodePath("Sprite2D:frame")
-tracks/0/interp = 1
-tracks/0/loop_wrap = true
-tracks/0/keys = {
-"times": PackedFloat32Array(0, 0.2, 0.4, 0.6, 0.866667),
-"transitions": PackedFloat32Array(1, 1, 1, 1, 1),
-"update": 1,
-"values": [3, 7, 3, 11, 1]
-}
-
-[sub_resource type="Animation" id="Animation_xi3l8"]
-resource_name = "walk_up"
-length = 0.8
-loop_mode = 1
-tracks/0/type = "value"
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/path = NodePath("Sprite2D:frame")
-tracks/0/interp = 1
-tracks/0/loop_wrap = true
-tracks/0/keys = {
-"times": PackedFloat32Array(0, 0.2, 0.4, 0.6, 0.866667),
-"transitions": PackedFloat32Array(1, 1, 1, 1, 1),
-"update": 1,
-"values": [2, 6, 2, 10, 1]
-}
-
-[sub_resource type="Animation" id="Animation_t2d26"]
-resource_name = "walk_down"
-length = 0.8
-loop_mode = 1
-tracks/0/type = "value"
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/path = NodePath("Sprite2D:frame")
-tracks/0/interp = 1
-tracks/0/loop_wrap = true
-tracks/0/keys = {
-"times": PackedFloat32Array(0, 0.2, 0.4, 0.6, 0.866667),
-"transitions": PackedFloat32Array(1, 1, 1, 1, 1),
-"update": 1,
-"values": [1, 5, 1, 9, 1]
-}
-
-[sub_resource type="AnimationLibrary" id="AnimationLibrary_vasa4"]
-_data = {
-&"RESET": SubResource("Animation_ydy0f"),
-&"walk_down": SubResource("Animation_t2d26"),
-&"walk_left": SubResource("Animation_gw8ya"),
-&"walk_right": SubResource("Animation_etupx"),
-&"walk_up": SubResource("Animation_xi3l8")
-}
-
-[node name="CharacterBody2D" type="CharacterBody2D"]
+[node name="Player" type="CharacterBody2D"]
+motion_mode = 1
 script = ExtResource("1_a7b0y")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
@@ -107,9 +47,22 @@ frame = 1
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 position = Vector2(0, 1)
-shape = SubResource("CircleShape2D_cxr5p")
+shape = SubResource("CircleShape2D_gw8ya")
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
 libraries = {
-&"": SubResource("AnimationLibrary_vasa4")
+&"": ExtResource("2_ydy0f")
 }
+
+[node name="ability1particles" type="GPUParticles2D" parent="."]
+visible = false
+amount = 64
+texture = ExtResource("2_gw8ya")
+process_material = SubResource("ParticleProcessMaterial_etupx")
+
+[node name="Blood" type="GPUParticles2D" parent="."]
+visible = false
+emitting = false
+amount = 64
+texture = ExtResource("2_gw8ya")
+process_material = SubResource("ParticleProcessMaterial_ydy0f")

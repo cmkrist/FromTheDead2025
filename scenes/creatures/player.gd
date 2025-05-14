@@ -23,14 +23,17 @@ enum STATE {
 }
 var current_state = STATE.IDLE
 
+var is_casting := false
+
 func _ready() -> void:
 	# Set default character sprite if none is set
 	if $Sprite2D.texture == null:
 		var keys = Characters.keys()
 		set_sprite(Characters[keys[randi_range(0, keys.size() - 1)]])
 
-func _physics_process(delta: float) -> void:
+func _physics_process(_delta: float) -> void:
 	handle_movement()
+	handle_abilities()
 	update_sprite()
 	move_and_slide()
 
@@ -44,6 +47,15 @@ func _input(event: InputEvent) -> void:
 	if event.is_action_released("sprint"):
 		SPEED = BASE_SPEED
 		$AnimationPlayer.speed_scale = 1
+	if event.is_action_pressed("ability_1"):
+		is_casting = true
+		$ability1particles.emitting = true
+	if event.is_action_released("ability_1"):
+		is_casting = false
+		$ability1particles.emitting = false
+
+func handle_abilities():
+	$ability1particles.global_position = get_global_mouse_position()
 
 func handle_movement() -> void:
 	var lr_direction := Input.get_axis("move_left", "move_right")
