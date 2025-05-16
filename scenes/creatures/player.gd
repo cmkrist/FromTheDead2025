@@ -1,27 +1,5 @@
-extends CharacterBody2D
-
-var SPEED = 100.0
-const BASE_SPEED = 100.0
-const SPRINT_SPEED = 75.0
-const DIAGONAL_SPEED_MODIFIER = 0.75
-
-const Characters = {
-	"Male1": "res://assets/textures/male_1.png",
-	"Male2": "res://assets/textures/male_2.png",
-	"Female1": "res://assets/textures/female_1.png",
-	"Female2": "res://assets/textures/female_2.png",
-	"ConstructionWorker": "res://assets/textures/construction_worker.png",
-	"OldMan": "res://assets/textures/old_man.png"
-}
-# States
-enum STATE {
-	IDLE,
-	WALK_LEFT,
-	WALK_RIGHT,
-	WALK_UP,
-	WALK_DOWN
-}
-var current_state = STATE.IDLE
+extends NPC
+class_name Player
 
 var is_casting := false
 
@@ -31,8 +9,8 @@ func _ready() -> void:
 		var keys = Characters.keys()
 		set_sprite(Characters[keys[randi_range(0, keys.size() - 1)]])
 
-func _physics_process(_delta: float) -> void:
-	handle_movement()
+func _physics_process(delta: float) -> void:
+	handle_movement(delta)
 	handle_abilities()
 	update_sprite()
 	move_and_slide()
@@ -42,10 +20,10 @@ func _input(event: InputEvent) -> void:
 		var keys = Characters.keys()
 		set_sprite(Characters[keys[randi_range(0, keys.size() - 1)]])
 	if event.is_action_pressed("sprint"):
-		SPEED = BASE_SPEED + SPRINT_SPEED
+		SPEED *= SPRINT_MOD
 		$AnimationPlayer.speed_scale = 2
 	if event.is_action_released("sprint"):
-		SPEED = BASE_SPEED
+		SPEED /= SPRINT_MOD
 		$AnimationPlayer.speed_scale = 1
 	if event.is_action_pressed("ability_1"):
 		is_casting = true
@@ -53,30 +31,36 @@ func _input(event: InputEvent) -> void:
 	if event.is_action_released("ability_1"):
 		is_casting = false
 		$ability1particles.emitting = false
+	if event.is_action("zoom_in"):
+		var cam = get_viewport().get_camera_2d()
+		cam.zoom += Vector2(1, 1)
+	if event.is_action_pressed("zoom_out"):
+		var cam = get_viewport().get_camera_2d()
+		cam.zoom += Vector2(-1, -1)
 
 func handle_abilities():
 	$ability1particles.global_position = get_global_mouse_position()
 
-func handle_movement() -> void:
+func handle_movement(delta) -> void:
 	var lr_direction := Input.get_axis("move_left", "move_right")
 	var ud_direction := Input.get_axis("move_up", "move_down")
 	# Calculate velocity based on input
 	if lr_direction != 0.0 and ud_direction != 0.0:
 		# Moving diagonally - apply speed modifier
-		velocity.x = lr_direction * SPEED * DIAGONAL_SPEED_MODIFIER
-		velocity.y = ud_direction * SPEED * DIAGONAL_SPEED_MODIFIER
+		velocity.x = lr_direction * SPEED * DIAGONAL_SPEED_MODIFIER * delta
+		velocity.y = ud_direction * SPEED * DIAGONAL_SPEED_MODIFIER * delta
 	elif lr_direction != 0.0:
 		# Moving horizontally
-		velocity.x = lr_direction * SPEED
+		velocity.x = lr_direction * SPEED * delta
 		velocity.y = move_toward(velocity.y, 0, SPEED)
 	elif ud_direction != 0.0:
 		# Moving vertically
-		velocity.y = ud_direction * SPEED
+		velocity.y = ud_direction * SPEED * delta
 		velocity.x = move_toward(velocity.x, 0, SPEED)
 	else:
 		# Not moving - decelerate
-		velocity.x = move_toward(velocity.x, 0, SPEED)
-		velocity.y = move_toward(velocity.y, 0, SPEED)
+		velocity.x = move_toward(velocity.x, 0, SPEED * delta)
+		velocity.y = move_toward(velocity.y, 0, SPEED * delta)
 
 func update_sprite() -> void:
 	# Determine current state based on velocity and facing direction
