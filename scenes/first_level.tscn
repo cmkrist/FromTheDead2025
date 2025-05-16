@@ -40,4 +40,5 @@ tile_map_data = PackedByteArray("AAAoAAcAAAABAAAAAAAoAAgAAAABAAEAAAAoABAAAAABAAA
 tile_set = SubResource("TileSet_snglc")
 
 [node name="NavigationRegion2D" type="NavigationRegion2D" parent="." groups=["Navigation"]]
+visible = false
 navigation_polygon = SubResource("NavigationPolygon_imgkl")
