@@ -23,6 +23,7 @@ gravity = Vector3(0, 98, 0)
 attractor_interaction_enabled = false
 
 [node name="Npc" type="CharacterBody2D"]
+collision_layer = 0
 motion_mode = 1
 platform_on_leave = 2
 script = ExtResource("1_m6s00")
@@ -47,6 +48,9 @@ texture = ExtResource("2_qopgg")
 process_material = SubResource("ParticleProcessMaterial_2g75r")
 
 [node name="NavigationAgent2D" type="NavigationAgent2D" parent="."]
-path_desired_distance = 3.0
-target_desired_distance = 3.0
+path_desired_distance = 10.0
+target_desired_distance = 6.0
 path_max_distance = 20.0
+debug_enabled = true
+
+[node name="Camera2D" type="Camera2D" parent="."]
