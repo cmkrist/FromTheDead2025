@@ -53,6 +53,15 @@ icon = ExtResource("3_75u2n")
 layout_mode = 2
 icon = ExtResource("4_3wlde")
 
+[node name="Label2" type="Label" parent="AbilityContainer"]
+layout_mode = 2
+text = "Sprint"
+horizontal_alignment = 1
+
+[node name="Sprint" type="ProgressBar" parent="AbilityContainer"]
+layout_mode = 2
+max_value = 5.0
+
 [node name="Topbar" type="HBoxContainer" parent="."]
 layout_mode = 2
 offset_right = 1152.0

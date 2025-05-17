@@ -8,6 +8,10 @@
 
 config_version=5
 
+[animation]
+
+warnings/check_invalid_track_paths=false
+
 [application]
 
 config/name="FromTheDead"
@@ -27,6 +31,7 @@ project/assembly_name="FromTheDead"
 
 goals=""
 CopSpawn=""
+Player=""
 
 [input]
 

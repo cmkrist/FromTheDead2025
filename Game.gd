@@ -12,7 +12,7 @@ func _ready():
 	for i in spawning_npcs:
 		spawn_npc()
 	# Specified for GDScript Error
-	CopSpawns = get_tree().get_nodes_in_group("CopSpawn")
+	CopSpawns = get_tree().get_nodes_in_group("goals")
 	
 	
 func _process(delta: float) -> void:

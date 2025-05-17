@@ -3,9 +3,15 @@ class_name NPC
 
 var health = 100.0
 var SPEED = 5000.0
-const SPRINT_MOD = 1.5
+const SPRINT_MOD = 2.25
 const BASE_SPEED = 1000.0
 const DIAGONAL_SPEED_MODIFIER = 0.75
+@onready var highlight_material = load("res://assets/effects/highlight_material.tres")
+# Targets
+var is_afraid_of: Node2D
+# States
+var is_afraid = false
+var is_inquisitive = false
 
 @export var Goal:Node
 
@@ -25,13 +31,18 @@ enum STATE {
 	WALK_UP,
 	WALK_DOWN
 }
+
 var current_state = STATE.IDLE
 var previous_state = STATE.IDLE
 var delta_time_diff = 0.0
 
 func _ready() -> void:
+	# Setup
+	$Icon.hide()
+	# Event Listeners
+	$FearTimer.timeout.connect(_become_normal)
 	# Set default character sprite if none is set
-	if $Sprite2D.texture == null:
+	if $HumanSprite.texture == null:
 		var keys = Characters.keys()
 		set_sprite(Characters[keys[randi_range(0, keys.size() - 1)]])
 	# Set initial Goal
@@ -39,6 +50,8 @@ func _ready() -> void:
 		$NavigationAgent2D.target_position = Goal.global_position
 
 func _physics_process(delta: float) -> void:
+	if is_afraid:
+		_afraid_physics_process(delta)
 	if !$NavigationAgent2D.is_target_reached():
 		velocity = to_local($NavigationAgent2D.get_next_path_position()).normalized() * SPEED * delta
 	else:
@@ -46,8 +59,39 @@ func _physics_process(delta: float) -> void:
 	set_state()
 	update_sprite()
 	move_and_slide()
-	
-	
+
+func _afraid_physics_process(delta:float):
+	# Run away from the target
+	if is_afraid_of:
+		# Get the direction to the target
+		var direction = (global_position - is_afraid_of.global_position).normalized()
+		# Move in the opposite direction
+		velocity = direction * SPEED * delta
+		$NavigationAgent2D.target_position = global_position + velocity
+	else:
+		get_new_target()
+
+func _become_normal():
+	$Icon.hide()
+	is_afraid_of = null
+	is_afraid = false
+
+func scare(entity:Node2D) -> void:
+	$AudioStreamPlayer2D.play()
+	if !is_afraid:
+		is_afraid = true
+	is_afraid_of = entity
+	$Icon.show()
+	$FearTimer.start()
+
+func _take_damage(damage):
+	health -= damage
+	$Blood.emitting = true
+
+func _mouse_shape_enter(_i) -> void:
+	$HumanSprite.material = highlight_material
+func _mouse_shape_exit(_i) -> void:
+	$HumanSprite.material = null
 
 func get_new_target():
 	# Get all goals in level, then select one at random
@@ -87,15 +131,15 @@ func update_sprite() -> void:
 			$AnimationPlayer.stop()
 			match previous_state:
 				STATE.WALK_LEFT:
-					$Sprite2D.frame = 0
+					$HumanSprite.frame = 0
 				STATE.WALK_RIGHT:
-					$Sprite2D.frame = 3
+					$HumanSprite.frame = 3
 				STATE.WALK_UP:
-					$Sprite2D.frame = 2
+					$HumanSprite.frame = 2
 				STATE.WALK_DOWN:
-					$Sprite2D.frame = 1
+					$HumanSprite.frame = 1
 				_:
-					$Sprite2D.frame = 0
+					$HumanSprite.frame = 0
 		STATE.WALK_LEFT:
 			if !($AnimationPlayer.is_playing() && $AnimationPlayer.current_animation == "human_animations/walk_left"):
 				$AnimationPlayer.play("human_animations/walk_left")
@@ -110,7 +154,7 @@ func update_sprite() -> void:
 				$AnimationPlayer.play("human_animations/walk_down")
 
 func set_sprite(res_location):
-	$Sprite2D.texture = load(res_location)
-	$Sprite2D.frame = 1
+	$HumanSprite.texture = load(res_location)
+	$HumanSprite.frame = 1
 	
 # Setup function to be called when node is added to scene
