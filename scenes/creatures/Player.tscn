@@ -1,4 +1,4 @@
-[gd_scene load_steps=10 format=3 uid="uid://dl4jng54nil6q"]
+[gd_scene load_steps=10 format=3 uid="uid://ds2vmnyp6wfb"]
 
 [ext_resource type="Script" uid="uid://dt4xkfo1qv04j" path="res://scenes/creatures/player.gd" id="1_a7b0y"]
 [ext_resource type="Texture2D" uid="uid://dqp3lty0l6rqh" path="res://assets/textures/construction_worker.png" id="2_etupx"]
