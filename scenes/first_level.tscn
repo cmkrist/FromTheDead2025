@@ -612,7 +612,7 @@ tile_map_data = PackedByteArray("AAAeAAQAAAAAAAEAAAAfAAQAAAABAAEAAAAgAAQAAAACAAE
 tile_set = SubResource("TileSet_38i4m")
 
 [node name="purple flowers(Verticle)" type="TileMapLayer" parent="."]
-tile_map_data = PackedByteArray("AAAqAA4AAAABAAAAAAAqAA8AAAABAAEAAAAqABAAAAABAAIAAAAqAAkAAAABAAAAAAAqAAoAAAABAAEAAAAqAAsAAAABAAIAAAA=")
+tile_map_data = PackedByteArray("AAAqAA4AAAABAAAAAAAqAA8AAAABAAEAAAAqABAAAAABAAIAAAAqAAkAAAABAAAAAAAqAAoAAAABAAEAAAAqAAsAAAABAAIAAAACABIAAAABAAIAAAACABEAAAABAAAAAAA=")
 tile_set = SubResource("TileSet_l5n3x")
 
 [node name="sign" type="TileMapLayer" parent="."]
