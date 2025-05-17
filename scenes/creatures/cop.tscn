@@ -66,9 +66,11 @@ texture = ExtResource("5_pyx0k")
 region_enabled = true
 region_rect = Rect2(0, 0, 16, 16)
 
-[node name="AudioStreamPlayer2D" type="AudioStreamPlayer2D" parent="."]
+[node name="GunSound" type="AudioStreamPlayer2D" parent="."]
 stream = ExtResource("6_qhkqr")
 volume_db = -19.376
 pitch_scale = 1.49
+
+[node name="MeleeSound" type="AudioStreamPlayer2D" parent="."]
 
 [node name="ShotCooldown" type="Timer" parent="."]

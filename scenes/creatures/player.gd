@@ -1,14 +1,15 @@
+# scenes/creatures/player.gd
 extends NPC
 class_name Player
 
 signal state_changed(new_state)
 
-# Constants
+# Sprint properties
 const SPRINT_DURATION := 5.0  # Maximum sprint time in seconds
 const SPRINT_COOLDOWN := 3.0  # Cooldown before sprinting again
 const SPRINT_RECOVERY_DELAY := 1.5  # Delay before sprint meter starts recovering
 
-# Properties
+# Player-specific properties
 var is_casting := false
 var is_sprinting := false
 var sprint_timer := 0.0
@@ -21,8 +22,10 @@ func _ready() -> void:
 	# Set default character sprite if none is set
 	if $HumanSprite.texture == null:
 		_randomize_sprite()
+	
 	# Initially hide bat sprite
 	$BatSprite.hide()
+	
 	# Initialize sprint variables
 	is_sprint_recovering = false
 	sprint_recovery_delay_timer = 0.0
@@ -34,8 +37,9 @@ func _physics_process(delta: float) -> void:
 	_update_sprite()
 	move_and_slide()
 
-func scare(_player):
-	# Override parent method
+# Override scare method to prevent player from being scared
+func scare(_player) -> void:
+	# Override parent method - player cannot be scared
 	pass
 
 func _input(event: InputEvent) -> void:
@@ -188,6 +192,7 @@ func _play_appropriate_animation() -> void:
 	if not $AnimationPlayer.is_playing() or $AnimationPlayer.current_animation != animation_name:
 		$AnimationPlayer.play(animation_name)
 
+# Override to handle both sprites
 func _set_idle_frame(previous_state: int) -> void:
 	if is_sprinting:
 		# Set bat idle frame based on previous direction
@@ -216,10 +221,6 @@ func _set_idle_frame(previous_state: int) -> void:
 			_:
 				$HumanSprite.frame = 0
 
-func set_sprite(res_location: String) -> void:
-	$HumanSprite.texture = load(res_location)
-	$HumanSprite.frame = 1
-	
 func terrorize_citizens() -> void:
 	var citizens = $FearRadius.get_overlapping_bodies()
 	for person in citizens:
