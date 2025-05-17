@@ -26,6 +26,7 @@ project/assembly_name="FromTheDead"
 [global_group]
 
 goals=""
+CopSpawn=""
 
 [input]
 

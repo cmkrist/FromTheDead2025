@@ -38,9 +38,6 @@ func _ready() -> void:
 	if Goal:
 		$NavigationAgent2D.target_position = Goal.global_position
 
-	$Camera2D.make_current()
-
-
 func _physics_process(delta: float) -> void:
 	if !$NavigationAgent2D.is_target_reached():
 		velocity = to_local($NavigationAgent2D.get_next_path_position()).normalized() * SPEED * delta
