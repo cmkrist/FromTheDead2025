@@ -15,7 +15,7 @@ warnings/check_invalid_track_paths=false
 [application]
 
 config/name="FromTheDead"
-run/main_scene="uid://d1dvp4hxosfpf"
+run/main_scene="uid://do5pos8gey0pl"
 config/features=PackedStringArray("4.4", "GL Compatibility")
 config/icon="res://icon.svg"
 
