@@ -783,6 +783,7 @@ tile_map_data = PackedByteArray("AABIACEAAAAAAAAAAAAJABoAAAAAAAAAAABAAAUAAAAAAAA
 tile_set = SubResource("TileSet_m5da8")
 
 [node name="Nav_Human" type="NavigationRegion2D" parent="." groups=["Navigation"]]
+visible = false
 navigation_polygon = SubResource("NavigationPolygon_imgkl")
 
 [node name="Nav_Car" type="NavigationRegion2D" parent="."]
