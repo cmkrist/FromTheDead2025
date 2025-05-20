@@ -1,4 +1,3 @@
-# scenes/creatures/npc.gd
 extends Character
 class_name NPC
 
@@ -6,26 +5,38 @@ class_name NPC
 var is_afraid_of: Node2D
 var is_afraid = false
 var is_inquisitive = false
+var is_being_fed_on = false
+
+signal on_npc_clicked(npc)
 
 @onready var highlight_material = load("res://assets/effects/highlight_material.tres")
 
 func _ready() -> void:
+	Global.total_NPCs += 1
 	# Set up events
 	$Icon.hide()
-	if $FearTimer:
+	if has_node("FearTimer"):
 		$FearTimer.timeout.connect(_become_normal)
 	
-	# Set default character sprite if none is set
-	if $HumanSprite:
-		if $HumanSprite.texture == null:
-			var keys = Characters.keys()
-			set_sprite(Characters[keys[randi_range(0, keys.size() - 1)]])
+	# Set default character sprite if none is setd
+	var keys = Characters.keys()
+	set_sprite(Characters[keys[randi_range(0, keys.size() - 1)]])
+			
 	
 	# Set initial Goal
 	if Goal:
 		$NavigationAgent2D.target_position = Goal.global_position
+		
+	# Connect input event signal
+	input_event.connect(_on_input_event)
 
 func _physics_process(delta: float) -> void:
+	if is_frozen:
+		return
+	if is_being_fed_on:
+		# Don't move when being fed on
+		return
+		
 	if is_afraid:
 		_afraid_physics_process(delta)
 	
@@ -53,12 +64,14 @@ func _become_normal() -> void:
 	$Icon.hide()
 	is_afraid_of = null
 	is_afraid = false
+	is_being_fed_on = false
 
 func scare(entity: Node2D) -> void:
 	$AudioStreamPlayer2D.play()
 	if !is_afraid:
 		is_afraid = true
 	is_afraid_of = entity
+	$Icon.frame = 3
 	$Icon.show()
 	$FearTimer.start()
 
@@ -68,3 +81,11 @@ func _mouse_shape_enter(_i) -> void:
 
 func _mouse_shape_exit(_i) -> void:
 	$HumanSprite.material = null
+	
+func _on_input_event(_viewport, event, _shape_idx) -> void:
+	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
+		emit_signal("on_npc_clicked", self)
+
+func die():
+	Global.total_NPCs -= 1
+	queue_free()

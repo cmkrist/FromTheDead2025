@@ -1,10 +1,12 @@
-[gd_scene load_steps=10 format=3 uid="uid://ds2vmnyp6wfb"]
+[gd_scene load_steps=14 format=3 uid="uid://dl4jng54nil6q"]
 
 [ext_resource type="Script" uid="uid://dt4xkfo1qv04j" path="res://scenes/creatures/player.gd" id="1_a7b0y"]
 [ext_resource type="Texture2D" uid="uid://dqp3lty0l6rqh" path="res://assets/textures/construction_worker.png" id="2_etupx"]
 [ext_resource type="Texture2D" uid="uid://ccavaisq8rvbd" path="res://assets/textures/blood.png" id="2_gw8ya"]
+[ext_resource type="PackedScene" uid="uid://cvlf4mkb2pvjp" path="res://scenes/feeding_effect.tscn" id="2_t2d26"]
 [ext_resource type="AnimationLibrary" uid="uid://c6guviwv4py3l" path="res://assets/animations/human_animations.res" id="2_ydy0f"]
 [ext_resource type="Texture2D" uid="uid://dk3tfc1rbv123" path="res://assets/textures/bat.png" id="3_xi3l8"]
+[ext_resource type="Texture2D" uid="uid://coi68li5ek105" path="res://assets/textures/ritual.png" id="7_vasa4"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_gw8ya"]
 radius = 2.0
@@ -41,10 +43,18 @@ attractor_interaction_enabled = false
 [sub_resource type="CircleShape2D" id="CircleShape2D_etupx"]
 radius = 80.0
 
+[sub_resource type="CircleShape2D" id="CircleShape2D_vasa4"]
+radius = 32.0
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_gst85"]
+radius = 40.0
+
 [node name="Player" type="CharacterBody2D" groups=["Player"]]
 collision_mask = 255
 motion_mode = 1
 script = ExtResource("1_a7b0y")
+
+[node name="FeedingEffect" parent="." instance=ExtResource("2_t2d26")]
 
 [node name="HumanSprite" type="Sprite2D" parent="."]
 texture = ExtResource("2_etupx")
@@ -86,3 +96,22 @@ collision_mask = 5
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="FearRadius"]
 shape = SubResource("CircleShape2D_etupx")
+
+[node name="RitualArea" type="Area2D" parent="."]
+visible = false
+scale = Vector2(2, 2)
+collision_layer = 5
+collision_mask = 5
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="RitualArea"]
+shape = SubResource("CircleShape2D_vasa4")
+
+[node name="RitualSprite" type="Sprite2D" parent="RitualArea"]
+texture = ExtResource("7_vasa4")
+
+[node name="FearRadius" type="Area2D" parent="RitualArea"]
+collision_layer = 5
+collision_mask = 5
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="RitualArea/FearRadius"]
+shape = SubResource("CircleShape2D_gst85")

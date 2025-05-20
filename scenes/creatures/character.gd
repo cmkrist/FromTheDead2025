@@ -17,7 +17,7 @@ enum STATE {
 	WALK_UP,
 	WALK_DOWN
 }
-
+var is_frozen = false
 var current_state = STATE.IDLE
 var previous_state = STATE.IDLE
 
@@ -96,6 +96,22 @@ func _set_idle_frame(previous_state: int) -> void:
 func _take_damage(damage: float) -> void:
 	health -= damage
 	$Blood.emitting = true
+	if health <=0:
+		die()
+	
+func die():
+	queue_free();
+	pass;
+func freeze():
+	is_frozen = true
+	if has_node("Icon"):
+		$Icon.frame = 1
+		$Icon.show()
+	
+func unfreeze():
+	is_frozen = false
+	if $Icon:
+		$Icon.hide()
 
 # Get a new target from the goals group
 func get_new_target() -> void:

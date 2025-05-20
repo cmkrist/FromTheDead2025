@@ -3,7 +3,7 @@ extends NPC
 class_name Player
 
 signal state_changed(new_state)
-
+signal summon
 # Sprint properties
 const SPRINT_DURATION := 5.0  # Maximum sprint time in seconds
 const SPRINT_COOLDOWN := 3.0  # Cooldown before sprinting again
@@ -11,12 +11,21 @@ const SPRINT_RECOVERY_DELAY := 1.5  # Delay before sprint meter starts recoverin
 
 # Player-specific properties
 var is_casting := false
+var is_scary := false
 var is_sprinting := false
+var casting_timer := 0.0
 var sprint_timer := 0.0
 var sprint_cooldown_timer := 0.0
 var sprint_recovery_delay_timer := 0.0
 var can_sprint := true
 var is_sprint_recovering := false
+
+# Feeding properties
+var target_npc: Node2D = null
+var is_flying_to_target := false
+var feeding_effect_scene = preload("res://scenes/feeding_effect.tscn")
+@onready var feeding_effect: Node2D = $FeedingEffect
+var is_feeding := false
 
 func _ready() -> void:
 	# Set default character sprite if none is set
@@ -29,10 +38,31 @@ func _ready() -> void:
 	# Initialize sprint variables
 	is_sprint_recovering = false
 	sprint_recovery_delay_timer = 0.0
+	
+	feeding_effect.feeding_completed.connect(_on_feeding_completed)
+	
+	# Connect to NPC clicked signals
+	for npc in get_tree().get_nodes_in_group("NavNodes"):
+		if npc is NPC and npc != self:
+			npc.on_npc_clicked.connect(_on_npc_clicked)
 
 func _physics_process(delta: float) -> void:
+	if is_scary:
+		terrorize_citizens()
+	if is_casting:
+		process_casting(delta)
+		return
 	_handle_sprint_mechanics(delta)
-	_handle_movement(delta)
+	if is_feeding:
+		# Don't move while feeding
+		velocity = Vector2.ZERO
+	elif is_flying_to_target and target_npc:
+		# Flying to target (feeding target)
+		_fly_to_target(delta)
+	else:
+		# Normal movement
+		_handle_movement(delta)
+	
 	_handle_abilities()
 	_update_sprite()
 	move_and_slide()
@@ -41,24 +71,35 @@ func _physics_process(delta: float) -> void:
 func scare(_player) -> void:
 	# Override parent method - player cannot be scared
 	pass
-
+func process_casting(delta):
+	casting_timer -= delta
+	var bodies = $RitualArea.get_overlapping_bodies()
+	for body in bodies:
+		if body is NPC:
+			body.freeze()
+		
+	if casting_timer <= 0:
+		_on_casting_finished()
+		cast_ability_1()
+	
 func _input(event: InputEvent) -> void:
 	if event.is_action_pressed("ui_accept"):
 		_randomize_sprite()
 	
-	if event.is_action_pressed("sprint") and can_sprint:
+	if event.is_action_pressed("sprint") and can_sprint and !is_feeding:
 		_toggle_sprint(true)
 	elif event.is_action_released("sprint") and is_sprinting:
 		_toggle_sprint(false)
 	
 	if event.is_action_pressed("ability_1"):
 		is_casting = true
+		is_scary = true
+		casting_timer = 3.0
 		$ability1particles.emitting = true
+		$RitualArea.show()
+		$RitualArea.global_position = get_global_mouse_position()
 		terrorize_citizens()
-	elif event.is_action_released("ability_1"):
-		is_casting = false
-		$ability1particles.emitting = false
-	
+		summon.emit()
 	# Handle camera zoom with proper input detection
 	if event.is_action_pressed("zoom_in") or event.is_action_pressed("zoom_out"):
 		var zoom_direction = 1 if event.is_action_pressed("zoom_in") else -1
@@ -70,7 +111,12 @@ func _randomize_sprite() -> void:
 	var keys = Characters.keys()
 	if keys.size() > 0:
 		set_sprite(Characters[keys[randi() % keys.size()]])
-
+func _on_casting_finished():
+	is_casting = false
+	is_scary = false
+	$ability1particles.emitting = false
+	$RitualArea.hide()
+	
 func _toggle_sprint(enable: bool) -> void:
 	if enable and can_sprint:
 		is_sprinting = true
@@ -222,9 +268,85 @@ func _set_idle_frame(previous_state: int) -> void:
 				$HumanSprite.frame = 0
 
 func terrorize_citizens() -> void:
-	var citizens = $FearRadius.get_overlapping_bodies()
+	var citizens_near_player = $FearRadius.get_overlapping_bodies()
+	var citizens_near_castsite = $RitualArea/FearRadius.get_overlapping_bodies()
+	var citizens = []
+	citizens.append_array(citizens_near_player)
+	citizens.append_array(citizens_near_castsite)
 	for person in citizens:
 		if person is Cop:
 			person.attack(self)
 		elif person is NPC:
 			person.scare(self)
+
+# New functions for feeding mechanic
+func _on_npc_clicked(npc: Node2D) -> void:
+	if is_feeding or is_flying_to_target:
+		return
+	
+	# Set target and enable flying mode
+	target_npc = npc
+	is_flying_to_target = true
+	
+	# Automatically start sprinting to target
+	if !is_sprinting and can_sprint:
+		_toggle_sprint(true)
+
+func _fly_to_target(delta: float) -> void:
+	if target_npc == null:
+		is_flying_to_target = false
+		if is_sprinting:
+			_toggle_sprint(false)
+		return
+	
+	# Calculate direction to target
+	var direction = (target_npc.global_position - global_position).normalized()
+	
+	# Move towards target
+	velocity = direction * SPEED * delta
+	
+	# Check if we've reached the target (within 10 pixels)
+	if global_position.distance_to(target_npc.global_position) < 10:
+		_start_feeding()
+
+func _start_feeding() -> void:
+	if target_npc and !is_feeding:
+		is_feeding = true
+		is_flying_to_target = false
+		
+		# Mark target as being fed on
+		if target_npc is NPC:
+			target_npc.is_being_fed_on = true
+		
+		# Start feeding effect
+		feeding_effect.start_feeding(self, target_npc)
+func cast_ability_1():
+	var bodies = $RitualArea.get_overlapping_bodies()
+	for thing in bodies:
+		if thing == self:
+			pass
+		elif thing is NPC:
+			thing.die();
+	pass
+func _take_damage(amount):
+	super(amount)
+	if is_casting:
+		_on_casting_finished() # Just resets variables, does not cast spell.
+		unfreeze_entities()
+		
+func unfreeze_entities():
+	for body in $RitualArea.get_overlapping_bodies():
+		if body is NPC or body is Cop:
+			body.unfreeze()
+func _on_feeding_completed() -> void:
+	is_feeding = false
+	
+	# Clear target
+	if target_npc is NPC:
+		target_npc.is_being_fed_on = false
+	
+	target_npc = null
+	
+	# Stop sprinting if we were
+	if is_sprinting:
+		_toggle_sprint(false)

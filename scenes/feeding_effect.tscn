@@ -1,0 +1,47 @@
+[gd_scene load_steps=4 format=3 uid="uid://cvlf4mkb2pvjp"]
+
+[ext_resource type="Script" uid="uid://bnkij4nqhv13f" path="res://scenes/feeding_effect.gd" id="1_2sr5c"]
+[ext_resource type="Shader" uid="uid://d053ljcmj1oww" path="res://assets/effects/feeding_effect.gdshader" id="2_i6i6w"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_k804s"]
+shader = ExtResource("2_i6i6w")
+shader_parameter/blur_amount = 2.0
+
+[node name="FeedingEffect" type="Node2D"]
+script = ExtResource("1_2sr5c")
+
+[node name="BlurRect" type="ColorRect" parent="."]
+material = SubResource("ShaderMaterial_k804s")
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -40.0
+offset_top = -40.0
+offset_right = 40.0
+offset_bottom = 40.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(1, 1, 1, 0.392157)
+
+[node name="ProgressBar" type="ProgressBar" parent="."]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -40.0
+offset_top = -60.0
+offset_right = 40.0
+offset_bottom = -50.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+max_value = 1.0
+value = 0.5
+show_percentage = false
+
+[node name="Timer" type="Timer" parent="."]
+one_shot = true

@@ -63,9 +63,10 @@ layout_mode = 2
 max_value = 5.0
 
 [node name="Topbar" type="HBoxContainer" parent="."]
-layout_mode = 2
-offset_right = 1152.0
-offset_bottom = 27.0
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 54.0
 grow_horizontal = 2
 alignment = 1
 
@@ -113,3 +114,25 @@ theme = SubResource("Theme_ll0sn")
 theme_override_styles/fill = SubResource("StyleBoxFlat_ro3t7")
 value = 100.0
 rounded = true
+
+[node name="SummonUI" type="VBoxContainer" parent="."]
+visible = false
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -20.0
+offset_top = -20.0
+offset_right = 20.0
+offset_bottom = 20.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Label" type="Label" parent="SummonUI"]
+layout_mode = 2
+text = "Summoning..."
+
+[node name="ProgressBar" type="ProgressBar" parent="SummonUI"]
+layout_mode = 2

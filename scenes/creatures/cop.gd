@@ -1,4 +1,3 @@
-# scenes/creatures/cop.gd
 extends NPC
 class_name Cop
 
@@ -27,6 +26,10 @@ func _ready() -> void:
 	$ShotCooldown.timeout.connect(_on_shoot_cooldown_timeout)
 
 func _physics_process(delta: float) -> void:
+	if is_being_fed_on:
+		# Don't move when being fed on
+		return
+		
 	if is_aggro:
 		aggro_logic(delta)
 	
@@ -154,3 +157,8 @@ func update_sprite() -> void:
 func set_sprite(res_location: String) -> void:
 	$Sprite2D.texture = load(res_location)
 	$Sprite2D.frame = 1
+	
+# Override input event method
+func _on_input_event(viewport, event, shape_idx) -> void:
+	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
+		emit_signal("on_npc_clicked", self)
