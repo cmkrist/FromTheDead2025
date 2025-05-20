@@ -1,7 +1,8 @@
-[gd_scene load_steps=8 format=3 uid="uid://do5pos8gey0pl"]
+[gd_scene load_steps=9 format=3 uid="uid://do5pos8gey0pl"]
 
 [ext_resource type="Script" uid="uid://c3cchielh8x8g" path="res://scripts/menu.gd" id="1_5hgee"]
 [ext_resource type="Texture2D" uid="uid://dk1pojre4ww57" path="res://assets/textures/main menu.png" id="2_12vek"]
+[ext_resource type="AudioStream" uid="uid://dyfsyqvucicnm" path="res://assets/audio/MainMenu.mp3" id="2_xsilq"]
 [ext_resource type="FontFile" uid="uid://btalonohxlbc0" path="res://assets/fonts/Butcherman-Regular.ttf" id="3_vsw8r"]
 [ext_resource type="Texture2D" uid="uid://dfbkxbc356kwd" path="res://assets/textures/bat_icon.png" id="4_vsw8r"]
 
@@ -22,8 +23,6 @@ offset_top = 493.0
 offset_right = 467.0
 offset_bottom = 493.0
 script = ExtResource("1_5hgee")
-
-[node name="Sprite2D" type="Sprite2D" parent="."]
 
 [node name="MainMenu" type="Sprite2D" parent="."]
 z_index = -1
@@ -74,6 +73,11 @@ text = "Quit"
 position = Vector2(-252, -231)
 scale = Vector2(9.01563, 8.73438)
 texture = ExtResource("4_vsw8r")
+
+[node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("2_xsilq")
+autoplay = true
+parameters/looping = true
 
 [connection signal="button_down" from="CanvasLayer/VBoxContainer/start" to="." method="_on_start_button_down"]
 [connection signal="button_down" from="CanvasLayer/VBoxContainer/options" to="." method="_on_options_button_down"]

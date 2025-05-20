@@ -1,12 +1,18 @@
-[gd_scene load_steps=5 format=3 uid="uid://d1dvp4hxosfpf"]
+[gd_scene load_steps=6 format=3 uid="uid://d1dvp4hxosfpf"]
 
 [ext_resource type="PackedScene" uid="uid://tlcwlnly00y4" path="res://scenes/first_level.tscn" id="1_spdx3"]
 [ext_resource type="Script" uid="uid://c33shtxwu5gua" path="res://Game.gd" id="1_utl8k"]
-[ext_resource type="PackedScene" uid="uid://dl4jng54nil6q" path="res://scenes/creatures/player.tscn" id="2_puwen"]
+[ext_resource type="PackedScene" uid="uid://dl4jng54nil6q" path="res://scenes/creatures/Player.tscn" id="2_puwen"]
+[ext_resource type="AudioStream" uid="uid://dkht2cpfmept8" path="res://assets/audio/InGame.mp3" id="2_xwrrd"]
 [ext_resource type="PackedScene" uid="uid://dbqwwjxjnifhd" path="res://scenes/UI.tscn" id="3_puwen"]
 
 [node name="Demo" type="Node2D"]
 script = ExtResource("1_utl8k")
+
+[node name="InGame" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("2_xwrrd")
+autoplay = true
+parameters/looping = true
 
 [node name="CanvasLayer" type="CanvasLayer" parent="."]
 

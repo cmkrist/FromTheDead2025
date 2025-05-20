@@ -3,12 +3,12 @@
 importer="wav"
 type="AudioStreamWAV"
 uid="uid://do7tsno6fn40y"
-path="res://.godot/imported/alerted.wav-3436a31127bff2c2a36f2491f0679a8c.sample"
+path="res://.godot/imported/alerted.wav-aecb60f5df240f0801b5142ab77b2abf.sample"
 
 [deps]
 
-source_file="res://assets/sounds/alerted.wav"
-dest_files=["res://.godot/imported/alerted.wav-3436a31127bff2c2a36f2491f0679a8c.sample"]
+source_file="res://assets/audio/alerted.wav"
+dest_files=["res://.godot/imported/alerted.wav-aecb60f5df240f0801b5142ab77b2abf.sample"]
 
 [params]
 
